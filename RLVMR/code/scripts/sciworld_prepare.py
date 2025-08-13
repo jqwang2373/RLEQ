@@ -1,20 +1,20 @@
+from datasets import load_dataset, load_from_disk
 import logging
 import numpy as np
 import time
 import json
 import re
 from agent_system.environments.prompts import *
-import pickle as pkl
 import openai
 import random
 
 
-NUM_TRAJS = 200
+NUM_TRAJS = 300
 openai.api_key = "YOUR_API_KEY"  # Replace with your OpenAI API key
 MODEL = "gpt-4o"  # Replace with your desired model
 SAVE_PATH = "data/sciworld_cold-start.json"
 
-sciworld_dataset = pkl.load(open("data/sciworld_expert_traj.pkl", "rb"))
+alfworld_dataset = load_from_disk("data/sciworld_expert_traj")
 
 trajs = []
 for traj in sciworld_dataset:
@@ -117,7 +117,7 @@ for traj in trajs[:NUM_TRAJS]:
         meta_traj.append({"task": traj["task"], "traj": res})
 
         step_level_data = []
-        current_planning = "No plan."
+        latest_planning = "No plan."
         for i, item in enumerate(res):
             if i == 0:
                 prompt = SCIWORLD_TEMPLATE_NO_HIS_CS.format(
@@ -142,17 +142,17 @@ for traj in trajs[:NUM_TRAJS]:
                     action_history=action_history,
                     current_step=i + 1,
                     current_observation=item["obs"],
-                    planning=current_planning,
+                    planning=latest_planning,
                 )
 
-                if "<planning>" in item["reason"]:
-                    current_planning = re.search(
-                        r"<planning>(.*?)</planning>", item["reason"], re.DOTALL
-                    )
-                    if current_planning:
-                        current_planning = current_planning.group(1).strip()
-                    else:
-                        current_planning = "No plan."
+            if "<planning>" in item["reason"]:
+                current_planning = re.search(
+                    r"<planning>(.*?)</planning>", item["reason"], re.DOTALL
+                )
+                if current_planning:
+                    latest_planning = current_planning.group(1).strip()
+                else:
+                    pass
             response = f"{item['reason']}\n<action>{item['action']}</action>\n"
 
             step_level_data.append(

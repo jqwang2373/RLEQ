@@ -1,0 +1,94 @@
+{
+  "builder_name": "json",
+  "citation": "",
+  "config_name": "default",
+  "dataset_name": "agent_traj-l",
+  "dataset_size": 80661799,
+  "description": "",
+  "download_checksums": {
+    "hf://datasets/AgentGym/AgentTraj-L@ec675fa888263381803e7148d3a02a53c738a8e7/alfworld_train.json": {
+      "num_bytes": 16529692,
+      "checksum": null
+    },
+    "hf://datasets/AgentGym/AgentTraj-L@ec675fa888263381803e7148d3a02a53c738a8e7/babyai_train.json": {
+      "num_bytes": 4117163,
+      "checksum": null
+    },
+    "hf://datasets/AgentGym/AgentTraj-L@ec675fa888263381803e7148d3a02a53c738a8e7/lmrlgym_maze_train.json": {
+      "num_bytes": 1323389,
+      "checksum": null
+    },
+    "hf://datasets/AgentGym/AgentTraj-L@ec675fa888263381803e7148d3a02a53c738a8e7/lmrlgym_wordle_train.json": {
+      "num_bytes": 8914511,
+      "checksum": null
+    },
+    "hf://datasets/AgentGym/AgentTraj-L@ec675fa888263381803e7148d3a02a53c738a8e7/sciworld_train.json": {
+      "num_bytes": 28097642,
+      "checksum": null
+    },
+    "hf://datasets/AgentGym/AgentTraj-L@ec675fa888263381803e7148d3a02a53c738a8e7/sqlgym_train.json": {
+      "num_bytes": 13935005,
+      "checksum": null
+    },
+    "hf://datasets/AgentGym/AgentTraj-L@ec675fa888263381803e7148d3a02a53c738a8e7/textcraft_train.json": {
+      "num_bytes": 2060165,
+      "checksum": null
+    },
+    "hf://datasets/AgentGym/AgentTraj-L@ec675fa888263381803e7148d3a02a53c738a8e7/tool_movie_train.json": {
+      "num_bytes": 1913005,
+      "checksum": null
+    },
+    "hf://datasets/AgentGym/AgentTraj-L@ec675fa888263381803e7148d3a02a53c738a8e7/tool_todo_train.json": {
+      "num_bytes": 1171074,
+      "checksum": null
+    },
+    "hf://datasets/AgentGym/AgentTraj-L@ec675fa888263381803e7148d3a02a53c738a8e7/tool_weather_train.json": {
+      "num_bytes": 3680490,
+      "checksum": null
+    },
+    "hf://datasets/AgentGym/AgentTraj-L@ec675fa888263381803e7148d3a02a53c738a8e7/webshop_train.json": {
+      "num_bytes": 29807415,
+      "checksum": null
+    }
+  },
+  "download_size": 111549551,
+  "features": {
+    "conversations": [
+      {
+        "from": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "loss": {
+          "dtype": "bool",
+          "_type": "Value"
+        },
+        "value": {
+          "dtype": "string",
+          "_type": "Value"
+        }
+      }
+    ],
+    "item_id": {
+      "dtype": "string",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 192211350,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 80661799,
+      "num_examples": 14485,
+      "dataset_name": "agent_traj-l"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}
