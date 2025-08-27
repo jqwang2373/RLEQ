@@ -108,9 +108,9 @@ def process_trajectory_rlvmr_rewards(
                 is_repeated = False
                 for prev_step_idx in range(step_idx):
                     prev_output = trajectory[prev_step_idx]["full_output"]
-                    prev_action = re.findall(r'<action>(.*?)</action>', prev_output)
+                    prev_action = re.findall(r'<action>(.*?)</action>', prev_output, re.DOTALL)
                     prev_valid = trajectory[prev_step_idx]["is_action_valid"]
-                    current_action = re.findall(r'<action>(.*?)</action>', full_output)
+                    current_action = re.findall(r'<action>(.*?)</action>', full_output, re.DOTALL)
                     if prev_action == current_action and prev_valid:
                         is_repeated = True
                         break
@@ -126,12 +126,12 @@ def process_trajectory_rlvmr_rewards(
             elif '<reflection>' in full_output:
                 step_data["rlvmr_tag_type"] = "<reflection>"
                 reflection_count += 1
-                current_action = re.findall(r'<action>(.*?)</action>', full_output)
+                current_action = re.findall(r'<action>(.*?)</action>', full_output, re.DOTALL)
                 if step_idx > 0:
                     prev_step = trajectory[step_idx-1]
                     prev_valid = prev_step["is_action_valid"] and prev_step['action_available']
                     prev_output = prev_step["full_output"]
-                    prev_action = re.findall(r'<action>(.*?)</action>', prev_output)    
+                    prev_action = re.findall(r'<action>(.*?)</action>', prev_output, re.DOTALL)    
                 else:
                     prev_action = ""
                     prev_valid = False

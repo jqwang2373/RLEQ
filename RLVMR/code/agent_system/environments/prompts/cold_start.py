@@ -37,9 +37,7 @@ Specify the next action the agent should take to progress toward the task goal, 
 2. Action Validity: Follow the exact format below. Any deviation renders the action invalid:
 Valid actions: go to [recep id], take [obj id] from [recep id], put [obj id] in/on [recep id], open/close [recep id], use [obj id], heat/cool/clean [obj id] with [recep id]
 
-<action>
-Choose the most appropriate action from the valid actions.
-</action>
+<action>Choose the most appropriate action from the valid actions.</action>
 """
 
 ALFWORLD_TEMPLATE_CS = """
@@ -83,9 +81,7 @@ Specify the next action the agent should take to progress toward the task goal, 
 2. Action Validity: Follow the exact format below. Any deviation renders the action invalid:
 Valid actions: go to [recep id], take [obj id] from [recep id], put [obj id] in/on [recep id], open/close [recep id], use [obj id], heat/cool/clean [obj id] with [recep id]
 
-<action>
-Choose the most appropriate action from the valid actions.
-</action>
+<action>Choose the most appropriate action from the valid actions.</action>
 """
 
 ALFWORLD_TAGGING_TEMPLATE = """
