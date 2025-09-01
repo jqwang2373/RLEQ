@@ -45,7 +45,7 @@ def player_init(id = None):
         "player": role["player"],
         "scene": role["scene"],
         "character": role["main_cha"],
-        "topic": role["topic"],
+        # "topic": role["topic"],
         "task": role["task"],
         "history": []
     }
