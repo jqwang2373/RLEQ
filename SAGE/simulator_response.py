@@ -119,7 +119,6 @@ Change:
     emo_point = player_data['emo_point']
 
     prompt = template.replace("{{emotion}}",str(emo_point)).replace("{{simulator_role}}",player_data["player"]).replace("{{simulator_scene}}",player_data["scene"]).replace("{{target}}",target_prompt)
-    prompt = prompt.replace("{{target}}",target_prompt[player_data["target"]])
 
     #load history dialogue in json type
     history = player_data["history"]
