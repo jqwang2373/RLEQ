@@ -9,13 +9,7 @@ class URLEnvironment():
     def __init__(self, config, tokenizer):
         self.config = config
         self.tokenizer = tokenizer
-        self.url = self.config.actor_rollout_ref.rollout.environment.url
 
-    def get_response_batched(self, messages_batched):
-        payload = {"messages_batched": messages_batched}
-        url = self.url + "/get_env_response_batched"
-        env_response_batched = requests.post(url, json=payload).json()
-        return env_response_batched
 
     def get_reward_batched(self, data: DataProto):  #batched
         messages_batched = []

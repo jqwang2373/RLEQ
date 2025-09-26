@@ -527,7 +527,6 @@ class vLLMMultiTurnViaChatRollout(BaseRollout):
             if len(todo)==0:
                 break
             #print("TODO LEFT",len(todo))
-            self.run_jack_process.kill()  
 
 
         emo_point_list = []

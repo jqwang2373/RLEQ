@@ -46,13 +46,9 @@ import verl.utils.torch_functional as verl_F
 import requests
 import time
 from verl.workers.rollout.vllm_rollout.system_prompt import *
-# from verl.workers.rollout.vllm_rollout.hard_player_simulator4test import *
-# from verl.workers.rollout.vllm_rollout.hard_player_simulator_intask import *
-# from verl.workers.rollout.vllm_rollout.benchmark_simulator_depolyed import *
-# from verl.workers.rollout.vllm_rollout.benchmark_simulator_easier import *
+
 from verl.workers.rollout.vllm_rollout.hard_player_simulator_dsv3 import *
 
-# from verl.workers.rollout.vllm_rollout.hard_player_simulator_dsv3 import *
 
 import os
 # TODO
@@ -558,7 +554,6 @@ class vLLMMultiTurnViaChatRollout_think(BaseRollout):
             messagess_todo=[]
             for i_batch_sample in todo:
                 messagess_todo.append(messagess[i_batch_sample])
-            self.run_jack_process = subprocess.Popen(["python", "/apdcephfs_qy3/share_301372554/share_info/peisongwang/verl_merged/run_jack.py"], shell=False)
                 
             env_response_batched = []
             for i in range(len(messagess_todo)):
@@ -588,7 +583,6 @@ class vLLMMultiTurnViaChatRollout_think(BaseRollout):
             
             if len(todo)==0:
                 break
-            self.run_jack_process.kill()  
             next_prompt_to_tokenize=[]
             for i_batch_sample in todo:
                 dialog_messages = []

@@ -26,12 +26,8 @@ from transformers import PreTrainedTokenizer
 from verl.utils.model import compute_position_id_with_mask
 import verl.utils.torch_functional as verl_F
 from verl.workers.rollout.vllm_rollout.system_prompt import *
-# from verl.workers.rollout.vllm_rollout.hard_player_simulator4test import *
-# from verl.workers.rollout.vllm_rollout.hard_player_simulator_intask import *
-# from verl.workers.rollout.vllm_rollout.benchmark_simulator_depolyed import *
-from verl.workers.rollout.vllm_rollout.benchmark_simulator_easier_depolyed import *
-# from verl.workers.rollout.vllm_rollout.hard_player_simulator_dsv3 import *
-# from verl.workers.rollout.vllm_rollout.hard_player_simulator_dsv3 import *
+
+from verl.workers.rollout.vllm_rollout.hard_player_simulator_dsv3 import *
 
 
 from verl.utils.py_functional import to_1d_np_array

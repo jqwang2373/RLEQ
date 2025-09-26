@@ -45,7 +45,6 @@ ray job submit --address="http://127.0.0.1:8265" \
     +actor_rollout_ref.rollout.environment.name=url_environment \
     +actor_rollout_ref.rollout.environment.per_turn_length=5000 \
     +actor_rollout_ref.rollout.environment.max_turns=8 \
-    +actor_rollout_ref.rollout.environment.url="YOUR_API_URL" \
     actor_rollout_ref.rollout.temperature=1.0 \
     actor_rollout_ref.rollout.top_p=1.0 \
     actor_rollout_ref.rollout.n=1 \
