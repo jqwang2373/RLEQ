@@ -51,28 +51,23 @@ extractor_instance = None
 TEST_EXAMPLES = [
     {
         "text": "Kids are talking by the door",
-        "features": '[{"word": "Kids are talking","pitch_mean": 315,"pitch_slope": 90,"energy_rms": 0.005,"energy_slope": 25,"spectral_centroid": 2650},{"word": "by the door","pitch_mean": 360,"pitch_slope": -110,"energy_rms": 0.004,"energy_slope": -30,"spectral_centroid": 2900}]',
-        "instruction": "Generate natural speech"
+        "features": '[{"word": "Kids are talking","pitch_mean": 315,"pitch_slope": 90,"energy_rms": 0.005,"energy_slope": 25,"spectral_centroid": 2650},{"word": "by the door","pitch_mean": 360,"pitch_slope": -110,"energy_rms": 0.004,"energy_slope": -30,"spectral_centroid": 2900}]'
     },
     {
         "text": "Hello world, how are you today?",
-        "features": '[{"word": "Hello world","pitch_mean": 280,"pitch_slope": 50,"energy_rms": 0.006,"energy_slope": 15,"spectral_centroid": 2400},{"word": "how are you","pitch_mean": 320,"pitch_slope": -20,"energy_rms": 0.007,"energy_slope": 10,"spectral_centroid": 2600},{"word": "today?","pitch_mean": 350,"pitch_slope": -80,"energy_rms": 0.005,"energy_slope": -25,"spectral_centroid": 2800}]',
-        "instruction": "Generate cheerful speech"
+        "features": '[{"word": "Hello world","pitch_mean": 280,"pitch_slope": 50,"energy_rms": 0.006,"energy_slope": 15,"spectral_centroid": 2400},{"word": "how are you","pitch_mean": 320,"pitch_slope": -20,"energy_rms": 0.007,"energy_slope": 10,"spectral_centroid": 2600},{"word": "today?","pitch_mean": 350,"pitch_slope": -80,"energy_rms": 0.005,"energy_slope": -25,"spectral_centroid": 2800}]'
     },
     {
         "text": "The weather is beautiful outside",
-        "features": '[{"word": "The weather is","pitch_mean": 250,"pitch_slope": 30,"energy_rms": 0.004,"energy_slope": 20,"spectral_centroid": 2200},{"word": "beautiful outside","pitch_mean": 300,"pitch_slope": -60,"energy_rms": 0.006,"energy_slope": -15,"spectral_centroid": 2500}]',
-        "instruction": "Generate calm and peaceful speech"
+        "features": '[{"word": "The weather is","pitch_mean": 250,"pitch_slope": 30,"energy_rms": 0.004,"energy_slope": 20,"spectral_centroid": 2200},{"word": "beautiful outside","pitch_mean": 300,"pitch_slope": -60,"energy_rms": 0.006,"energy_slope": -15,"spectral_centroid": 2500}]'
     },
     {
         "text": "I'm excited about this project!",
-        "features": '[{"word": "I\'m excited","pitch_mean": 380,"pitch_slope": 120,"energy_rms": 0.008,"energy_slope": 40,"spectral_centroid": 3000},{"word": "about this","pitch_mean": 350,"pitch_slope": 80,"energy_rms": 0.007,"energy_slope": 30,"spectral_centroid": 2800},{"word": "project!","pitch_mean": 400,"pitch_slope": -100,"energy_rms": 0.009,"energy_slope": -20,"spectral_centroid": 3200}]',
-        "instruction": "Generate excited and energetic speech"
+        "features": '[{"word": "I\'m excited","pitch_mean": 380,"pitch_slope": 120,"energy_rms": 0.008,"energy_slope": 40,"spectral_centroid": 3000},{"word": "about this","pitch_mean": 350,"pitch_slope": 80,"energy_rms": 0.007,"energy_slope": 30,"spectral_centroid": 2800},{"word": "project!","pitch_mean": 400,"pitch_slope": -100,"energy_rms": 0.009,"energy_slope": -20,"spectral_centroid": 3200}]'
     },
     {
         "text": "Please be quiet in the library",
-        "features": '[{"word": "Please be quiet","pitch_mean": 200,"pitch_slope": -10,"energy_rms": 0.003,"energy_slope": 5,"spectral_centroid": 1800},{"word": "in the library","pitch_mean": 180,"pitch_slope": -30,"energy_rms": 0.002,"energy_slope": -10,"spectral_centroid": 1600}]',
-        "instruction": "Generate whispered and quiet speech"
+        "features": '[{"word": "Please be quiet","pitch_mean": 200,"pitch_slope": -10,"energy_rms": 0.003,"energy_slope": 5,"spectral_centroid": 1800},{"word": "in the library","pitch_mean": 180,"pitch_slope": -30,"energy_rms": 0.002,"energy_slope": -10,"spectral_centroid": 1600}]'
     }
 ]
 
@@ -119,28 +114,28 @@ def get_extractor_instance() -> Optional[AudioFeatureExtractor]:
             return None
     return extractor_instance
 
-def load_example(example_idx: int) -> Tuple[str, str, str]:
+def load_example(example_idx: int) -> Tuple[str, str]:
     """
     Load a predefined example for Mode 1.
     
     This function retrieves one of the predefined test examples and returns
-    the text, features, and instruction for use in the Gradio interface.
+    the text and features for use in the Gradio interface.
     
     Args:
         example_idx: Index of the example to load (0-4)
         
     Returns:
-        Tuple of (text, features_json, instruction)
+        Tuple of (text, features_json)
     """
     if 0 <= example_idx < len(TEST_EXAMPLES):
         example = TEST_EXAMPLES[example_idx]
-        return example["text"], example["features"], example["instruction"]
+        return example["text"], example["features"]
     else:
-        return "", "", "Generate natural speech"
+        return "", ""
 
 # ===== Mode 1: Text + Features to Audio (unified_tts mode 2) =====
 
-def mode1_text_features_to_audio(text: str, features: str, instruction: str, speed: float) -> Tuple[Optional[str], str]:
+def mode1_text_features_to_audio(text: str, features: str, speed: float) -> Tuple[Optional[str], str]:
     """
     Mode 1: Convert text and features to audio using unified_tts mode 2.
     
@@ -151,7 +146,6 @@ def mode1_text_features_to_audio(text: str, features: str, instruction: str, spe
     Args:
         text: Input text to synthesize
         features: JSON string containing word-level prosodic features
-        instruction: Instruction for controlling speech characteristics
         speed: Speech speed multiplier (1.0 = normal speed)
         
     Returns:
@@ -184,7 +178,6 @@ def mode1_text_features_to_audio(text: str, features: str, instruction: str, spe
             text=text,
             word_features=features,
             output_path=output_path,
-            instruct=instruction,
             speed=speed
         )
         
@@ -200,7 +193,7 @@ def mode1_text_features_to_audio(text: str, features: str, instruction: str, spe
 
 # ===== Mode 2: Text to Features + Audio (unified_tts mode 1) =====
 
-def mode2_text_to_features_audio(text: str, instruction: str, speed: float) -> Tuple[Optional[str], str, str]:
+def mode2_text_to_features_audio(text: str, speed: float) -> Tuple[Optional[str], str, str]:
     """
     Mode 2: Convert text to features and audio using unified_tts mode 1.
     
@@ -210,7 +203,6 @@ def mode2_text_to_features_audio(text: str, instruction: str, speed: float) -> T
     
     Args:
         text: Input text to synthesize
-        instruction: Instruction for controlling speech characteristics
         speed: Speech speed multiplier (1.0 = normal speed)
         
     Returns:
@@ -219,7 +211,7 @@ def mode2_text_to_features_audio(text: str, instruction: str, speed: float) -> T
     Implementation Logic:
         1. Validate inputs and get TTS instance
         2. Create temporary output file
-        3. Call unified_tts.text_to_speech() method
+        3. Call unified_tts.text_to_speech_with_features() method
         4. Extract generated features from the process
         5. Return audio file, features, and status message
     """
@@ -237,22 +229,38 @@ def mode2_text_to_features_audio(text: str, instruction: str, speed: float) -> T
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_file:
             output_path = tmp_file.name
             
-        # Generate audio using mode 1
-        success = tts.text_to_speech(
+        # Generate audio and extract features using the new method
+        success, generated_features = tts.text_to_speech_with_features(
             text=text,
             output_path=output_path,
-            instruct=instruction,
             speed=speed
         )
         
         if success and os.path.exists(output_path):
-            # Note: In the current unified_tts implementation, we don't have direct access
-            # to the generated features. This would need to be modified in the original
-            # code to return features as well. For now, we return a placeholder.
-            features_placeholder = "[Features generated internally - not accessible in current implementation]"
-            return output_path, features_placeholder, f"✅ Audio generated successfully! Text: '{text[:50]}...'"
+            # Format the generated features for display
+            if generated_features:
+                try:
+                    # Try to parse and pretty-print the JSON features
+                    features_obj = json.loads(generated_features)
+                    formatted_features = json.dumps(features_obj, indent=2, ensure_ascii=False)
+                except json.JSONDecodeError:
+                    # If it's not valid JSON, display as-is
+                    formatted_features = generated_features
+            else:
+                formatted_features = "No features generated"
+                
+            return output_path, formatted_features, f"✅ Audio and features generated successfully! Text: '{text[:50]}...'"
         else:
-            return None, "", "❌ Error: Audio generation failed"
+            # Even if audio generation failed, we might still have features
+            if generated_features:
+                try:
+                    features_obj = json.loads(generated_features)
+                    formatted_features = json.dumps(features_obj, indent=2, ensure_ascii=False)
+                except json.JSONDecodeError:
+                    formatted_features = generated_features
+                return None, formatted_features, "⚠️ Features generated but audio generation failed"
+            else:
+                return None, "", "❌ Error: Both audio and feature generation failed"
             
     except Exception as e:
         error_msg = f"❌ Error in Mode 2: {str(e)}"
@@ -457,11 +465,6 @@ def create_gradio_interface():
                         placeholder="Enter word-level features in JSON format...",
                         lines=8
                     )
-                    mode1_instruction = gr.Textbox(
-                        label="Instruction",
-                        value="Generate natural speech",
-                        placeholder="Enter instruction for speech characteristics..."
-                    )
                     mode1_speed = gr.Slider(
                         minimum=0.5,
                         maximum=2.0,
@@ -488,13 +491,13 @@ def create_gradio_interface():
             for i, btn in enumerate(example_btns):
                 btn.click(
                     fn=lambda idx=i: load_example(idx),
-                    outputs=[mode1_text, mode1_features, mode1_instruction]
+                    outputs=[mode1_text, mode1_features]
                 )
                 
             # Connect generate button
             mode1_generate_btn.click(
                 fn=mode1_text_features_to_audio,
-                inputs=[mode1_text, mode1_features, mode1_instruction, mode1_speed],
+                inputs=[mode1_text, mode1_features, mode1_speed],
                 outputs=[mode1_audio_output, mode1_status]
             )
         
@@ -512,11 +515,6 @@ def create_gradio_interface():
                         label="Text to Synthesize",
                         placeholder="Enter the text you want to convert to speech...",
                         lines=4
-                    )
-                    mode2_instruction = gr.Textbox(
-                        label="Instruction",
-                        value="Generate natural speech",
-                        placeholder="Enter instruction for speech characteristics..."
                     )
                     mode2_speed = gr.Slider(
                         minimum=0.5,
@@ -539,7 +537,7 @@ def create_gradio_interface():
             # Connect generate button
             mode2_generate_btn.click(
                 fn=mode2_text_to_features_audio,
-                inputs=[mode2_text, mode2_instruction, mode2_speed],
+                inputs=[mode2_text, mode2_speed],
                 outputs=[mode2_audio_output, mode2_features_output, mode2_status]
             )
         

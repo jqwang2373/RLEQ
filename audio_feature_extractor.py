@@ -24,6 +24,7 @@ Basic Implementation Logic:
 import os
 import json
 import warnings
+import argparse
 from typing import List, Optional, Dict, Any
 from dataclasses import dataclass
 import numpy as np
@@ -871,7 +872,7 @@ class AudioFeatureExtractor:
                              sampling_rate: int,
                              word_segments: List[WordSegment]) -> Dict[str, Any]:
         """
-        Extract comprehensive audio features for word segments
+        Extract comprehensive audio features for word segments (compatible with extractor.py format)
         
         Args:
             audio: Audio array
@@ -879,19 +880,22 @@ class AudioFeatureExtractor:
             word_segments: List of word segments with timestamps
             
         Returns:
-            Dictionary containing extracted features
+            Dictionary containing extracted features matching extractor.py format
         
         Implementation Logic:
         1. Extract features for each word segment
         2. Calculate acoustic features (pitch, energy, spectral)
-        3. Compute statistical summaries
-        4. Return comprehensive feature dictionary
+        3. Calculate speaking rate and other statistics
+        4. Return features in extractor.py compatible format
         """
-        features = {
-            "word_count": len(word_segments),
-            "total_duration": len(audio) / sampling_rate,
-            "word_features": []
-        }
+        # Calculate total duration
+        total_duration = len(audio) / sampling_rate
+        
+        # Count original and processed words
+        original_word_count = len(word_segments)
+        processed_word_count = 0
+        
+        word_features = []
         
         for word_segment in word_segments:
             if word_segment.start is None or word_segment.end is None:
@@ -906,14 +910,25 @@ class AudioFeatureExtractor:
                 continue
             
             # Extract acoustic features
-            word_features = self._extract_word_features(word_audio, sampling_rate, word_segment)
-            features["word_features"].append(word_features)
+            word_feature = self._extract_word_features(word_audio, sampling_rate, word_segment)
+            word_features.append(word_feature)
+            processed_word_count += 1
         
-        return features
+        # Calculate speaking rate (words per minute)
+        speaking_rate = (processed_word_count / total_duration * 60) if total_duration > 0 else 0.0
+        
+        # Return features in extractor.py compatible format
+        return {
+            "total_duration": total_duration,
+            "speaking_rate": speaking_rate,
+            "original_word_count": original_word_count,
+            "processed_word_count": processed_word_count,
+            "word_features": word_features
+        }
     
     def _extract_word_features(self, word_audio: np.ndarray, sampling_rate: int, word_segment: WordSegment) -> Dict[str, Any]:
         """
-        Extract acoustic features for a single word
+        Extract acoustic features for a single word (compatible with extractor.py format)
         
         Args:
             word_audio: Audio array for the word
@@ -921,68 +936,130 @@ class AudioFeatureExtractor:
             word_segment: Word segment information
             
         Returns:
-            Dictionary of acoustic features
+            Dictionary of acoustic features matching extractor.py format
         
         Implementation Logic:
         1. Calculate basic timing features
-        2. Extract pitch features using Parselmouth
-        3. Calculate energy and spectral features
-        4. Return comprehensive feature set
+        2. Extract pitch features using Parselmouth (pitch_mean, pitch_slope)
+        3. Calculate energy features (energy_rms, energy_slope)
+        4. Calculate spectral features (spectral_centroid)
+        5. Return features in extractor.py compatible format
         """
+        # Clean word text, remove special symbols
+        clean_word = word_segment.word
+        
+        # Initialize features with basic information
         features = {
-            "word": word_segment.word,
+            "word": clean_word,
             "start_time": word_segment.start,
             "end_time": word_segment.end,
             "duration": word_segment.end - word_segment.start,
-            "confidence": word_segment.score
+            "confidence_score": word_segment.score
         }
         
         try:
-            # Basic audio statistics
-            features["rms_energy"] = float(np.sqrt(np.mean(word_audio**2)))
-            features["max_amplitude"] = float(np.max(np.abs(word_audio)))
+            # === Pitch feature extraction ===
+            avg_pitch = np.nan
+            pitch_slope = np.nan
             
-            # Pitch features using Parselmouth
-            sound = parselmouth.Sound(word_audio, sampling_rate)
-            pitch = sound.to_pitch()
-            pitch_values = pitch.selected_array['frequency']
-            pitch_values = pitch_values[pitch_values != 0]  # Remove unvoiced frames
+            try:
+                # Create temporary audio file for parselmouth analysis
+                import tempfile
+                with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as temp_audio:
+                    sf.write(temp_audio.name, word_audio, sampling_rate)
+                    sound = parselmouth.Sound(temp_audio.name)
+                
+                pitch = sound.to_pitch(pitch_floor=50.0, pitch_ceiling=600.0)
+                pitch_times = pitch.xs()
+                pitch_values = pitch.selected_array['frequency']
+                
+                # Remove unvoiced frames (pitch = 0)
+                pitch_values[pitch_values == 0] = np.nan
+                valid_pitch = pitch_values[~np.isnan(pitch_values)]
+                
+                if len(valid_pitch) > 0:
+                    avg_pitch = np.mean(valid_pitch)
+                    
+                    # Calculate pitch change trend (slope) - safer method
+                    if len(valid_pitch) >= 15:
+                        # Only calculate slope when there are enough points (using linear regression)
+                        duration = features["duration"]
+                        time_points = np.linspace(0, duration, len(valid_pitch))
+                        coeffs = np.polyfit(time_points, valid_pitch, 1)
+                        pitch_slope = coeffs[0]  # Slope
+                    else:
+                        # Set to NaN when too few data points, safer
+                        pitch_slope = np.nan
+                else:
+                    # Set to default values when no valid pitch values
+                    avg_pitch = np.nan
+                    pitch_slope = np.nan
+                
+                # Clean up temporary file
+                try:
+                    os.unlink(temp_audio.name)
+                except:
+                    pass
+                    
+            except Exception as e:
+                print(f"Warning: Pitch extraction failed for word '{clean_word}': {e}")
+                avg_pitch = np.nan
+                pitch_slope = np.nan
             
-            if len(pitch_values) > 0:
-                features["pitch_mean"] = float(np.mean(pitch_values))
-                features["pitch_std"] = float(np.std(pitch_values))
-                features["pitch_min"] = float(np.min(pitch_values))
-                features["pitch_max"] = float(np.max(pitch_values))
-            else:
-                features["pitch_mean"] = 0.0
-                features["pitch_std"] = 0.0
-                features["pitch_min"] = 0.0
-                features["pitch_max"] = 0.0
+            # === Energy feature extraction ===
+            rms_energy = np.sqrt(np.mean(word_audio**2))  # RMS energy
+            try:
+                # 使用已创建的 sound 对象
+                intensity = sound.to_intensity()
+                intensity_times = intensity.xs()
+                intensity_values = intensity.values[0]
+                
+                # 计算对应时间段的强度值
+                word_duration = word_segment.end - word_segment.start
+                if len(intensity_values) > 2:
+                    start_energy = np.nanmean(intensity_values[:len(intensity_values)//3])
+                    end_energy = np.nanmean(intensity_values[len(intensity_values)*2//3:])
+                    if not (np.isnan(start_energy) or np.isnan(end_energy)):
+                        energy_slope = (end_energy - start_energy) / word_duration
+            except Exception as e:
+                print(f"Warning: Energy slope calculation failed for word '{clean_word}': {e}")
+                energy_slope = np.nan
             
-            # Spectral features
-            stft = librosa.stft(word_audio)
-            magnitude = np.abs(stft)
+            # === Spectral feature extraction ===
+            try:
+                # Spectral centroid: reflects timbre characteristics
+                segment_length = len(word_audio)
+                if segment_length < 2048:
+                    n_fft = 2 ** int(np.log2(segment_length))
+                    n_fft = max(n_fft, 512)  # Minimum value is 512
+                else:
+                    n_fft = 2048  # Default value
+                
+                spectral_centroid = librosa.feature.spectral_centroid(
+                    y=word_audio, sr=sampling_rate, n_fft=n_fft)[0].mean()
+            except Exception as e:
+                print(f"Warning: Spectral centroid calculation failed for word '{clean_word}': {e}")
+                spectral_centroid = np.nan
             
-            # Spectral centroid
-            spectral_centroids = librosa.feature.spectral_centroid(S=magnitude, sr=sampling_rate)[0]
-            features["spectral_centroid_mean"] = float(np.mean(spectral_centroids))
-            
-            # Spectral rolloff
-            spectral_rolloff = librosa.feature.spectral_rolloff(S=magnitude, sr=sampling_rate)[0]
-            features["spectral_rolloff_mean"] = float(np.mean(spectral_rolloff))
-            
-            # Zero crossing rate
-            zcr = librosa.feature.zero_crossing_rate(word_audio)[0]
-            features["zero_crossing_rate_mean"] = float(np.mean(zcr))
+            # Store all features for current word (matching extractor.py format)
+            features.update({
+                "pitch_mean": float(avg_pitch) if not np.isnan(avg_pitch) else None,
+                "pitch_slope": float(pitch_slope) if not np.isnan(pitch_slope) else None,
+                "energy_rms": float(rms_energy),
+                "energy_slope": float(energy_slope) if not np.isnan(energy_slope) else None,
+                "spectral_centroid": float(spectral_centroid) if not np.isnan(spectral_centroid) else None
+            })
             
         except Exception as e:
-            print(f"Warning: Feature extraction failed for word '{word_segment.word}': {e}")
+            print(f"Warning: Feature extraction failed for word '{clean_word}': {e}")
             # Set default values for failed features
-            for key in ["rms_energy", "max_amplitude", "pitch_mean", "pitch_std", 
-                       "pitch_min", "pitch_max", "spectral_centroid_mean", 
-                       "spectral_rolloff_mean", "zero_crossing_rate_mean"]:
-                if key not in features:
-                    features[key] = 0.0
+            features.update({
+                "pitch_mean": None,
+                "pitch_slope": None,
+                "energy_rms": 0.0,
+                "energy_slope": None,
+                "spectral_centroid": None
+            })
         
         return features
     
@@ -1057,14 +1134,18 @@ class AudioFeatureExtractor:
             # Extract audio features
             features = self.extract_audio_features(audio_array, sampling_rate, all_word_segments)
             
-            # Add metadata
+            # Format word features using the provided formatting function
+            formatted_word_features = self.format_word_features(features.get("word_features", []))
+            
+            # Add metadata and formatted features
             features.update({
                 "audio_path": audio_path,
                 "transcribed_text": text,
                 "original_word_count": original_word_count,
                 "final_word_count": len(all_word_segments),
                 "word_merging_enabled": enable_word_merging,
-                "triton_optimization": True
+                "triton_optimization": True,
+                "formatted_word_features": formatted_word_features  # Add formatted features
             })
             
             print(f"✅ Feature extraction completed successfully")
@@ -1082,6 +1163,85 @@ class AudioFeatureExtractor:
                 "word_features": [],
                 "audio_path": audio_path
             }
+
+    def clean_word_text(self, word: str) -> str:
+        """
+        Clean word text by removing special symbols and formatting
+        
+        Args:
+            word: Original word text
+            
+        Returns:
+            Cleaned word text
+        """
+        if not word:
+            return ""
+        
+        # Remove common punctuation and special characters
+        import re
+        # Keep only letters, numbers, and basic punctuation
+        cleaned = re.sub(r'[^\w\s\-\']', '', word)
+        # Remove extra whitespace
+        cleaned = cleaned.strip()
+        
+        return cleaned
+
+    def format_word_features(self, word_features): 
+        """ 
+        格式化word_features数据 
+        保留原有的格式化逻辑，处理word_features列表中的每个特征字典 
+        
+        Args: 
+            word_features (list): 原始word_features列表 
+            
+        Returns: 
+            str: 格式化后的word_features字符串 
+        """ 
+        if not isinstance(word_features, list): 
+            print(f"Warning: word_features is not a list: {type(word_features)}") 
+            return "" 
+        
+        formatted_features = [] 
+        
+        for feature_dict in word_features: 
+            if not isinstance(feature_dict, dict): 
+                print(f"Warning: Feature item is not a dict: {type(feature_dict)}") 
+                continue 
+            
+            # 提取并格式化各个字段 
+            formatted_feature = {} 
+            
+            # 处理word字段 
+            word = feature_dict.get('word', '') 
+            formatted_feature['word'] = self.clean_word_text(word) 
+            
+            # 处理数值字段，按照要求的精度格式化 
+            numeric_fields = { 
+                'pitch_mean': 0,  # 仅保留整数 
+                'pitch_slope': 0,  # 仅保留整数 
+                'energy_rms': 3,  # 保留三位小数 
+                'energy_slope': 0,  # 仅保留整数 
+                'spectral_centroid': 0  # 仅保留整数 
+            } 
+            
+            for field, decimal_places in numeric_fields.items(): 
+                value = feature_dict.get(field) 
+                if value is not None: 
+                    try: 
+                        if decimal_places == 0: 
+                            formatted_feature[field] = int(float(value)) 
+                        else: 
+                            formatted_feature[field] = round(float(value), decimal_places) 
+                    except (ValueError, TypeError): 
+                        print(f"Warning: Failed to format {field}: {value}") 
+                        formatted_feature[field] = None 
+                else: 
+                    formatted_feature[field] = None 
+            
+            formatted_features.append(formatted_feature) 
+        
+        # 转换为字符串格式 
+        return str(formatted_features)
 
 
 def extract_json_from_response(response_text: str) -> Dict[str, Any]:
@@ -1119,40 +1279,106 @@ def extract_json_from_response(response_text: str) -> Dict[str, Any]:
 
 def main():
     """
-    Main function demonstrating AudioFeatureExtractor usage
+    Main function for Audio Feature Extractor with command line support
     
     Implementation Logic:
-    1. Initialize AudioFeatureExtractor with default settings
-    2. Process example audio file (prompt.wav)
-    3. Extract features using Triton optimization
-    4. Display results and save to JSON file
-    5. Demonstrate extract_json_from_response function
+    1. Parse command line arguments for audio input and output paths
+    2. Initialize AudioFeatureExtractor with default settings
+    3. Process specified audio file
+    4. Extract features using Triton optimization
+    5. Save results to specified output file
     """
-    print("🎵 Audio Feature Extractor Demo")
+    # Set up command line argument parser
+    parser = argparse.ArgumentParser(
+        description="Audio Feature Extractor - Extract word-level features from audio files",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  python audio_feature_extractor.py --audio input.wav --output features.json
+  python audio_feature_extractor.py -a speech.wav -o output.json
+  python audio_feature_extractor.py --audio /path/to/audio.wav --output /path/to/features.json
+        """
+    )
+    
+    parser.add_argument(
+        '--audio', '-a',
+        type=str,
+        required=True,
+        help='Path to input audio file (required)'
+    )
+    
+    parser.add_argument(
+        '--output', '-o',
+        type=str,
+        required=True,
+        help='Path to output JSON file for extracted features (required)'
+    )
+    
+    parser.add_argument(
+        '--device',
+        type=str,
+        default="auto",
+        choices=["auto", "cpu", "cuda"],
+        help='Computing device (default: auto)'
+    )
+    
+    parser.add_argument(
+        '--merge-threshold',
+        type=float,
+        default=0.5,
+        help='Word merging threshold in seconds (default: 0.5)'
+    )
+    
+    parser.add_argument(
+        '--text',
+        type=str,
+        default=None,
+        help='Pre-transcribed text (optional, if not provided Whisper will transcribe)'
+    )
+    
+    parser.add_argument(
+        '--no-word-merging',
+        action='store_true',
+        help='Disable word merging for short segments'
+    )
+    
+    # Parse arguments
+    args = parser.parse_args()
+    
+    print("🎵 Audio Feature Extractor")
     print("=" * 50)
+    print(f"📁 Input audio: {args.audio}")
+    print(f"💾 Output file: {args.output}")
+    print(f"🖥️  Device: {args.device}")
+    print(f"⏱️  Merge threshold: {args.merge_threshold}s")
+    print(f"📝 Pre-transcribed text: {'Yes' if args.text else 'No (will use Whisper)'}")
+    print(f"🔗 Word merging: {'Disabled' if args.no_word_merging else 'Enabled'}")
     
     try:
+        # Check if input audio file exists
+        if not os.path.exists(args.audio):
+            print(f"❌ Audio file not found: {args.audio}")
+            return 1
+        
+        # Create output directory if it doesn't exist
+        output_dir = os.path.dirname(args.output)
+        if output_dir and not os.path.exists(output_dir):
+            os.makedirs(output_dir, exist_ok=True)
+            print(f"📁 Created output directory: {output_dir}")
+        
         # Initialize extractor
+        print(f"\n🚀 Initializing Audio Feature Extractor...")
         extractor = AudioFeatureExtractor(
-            device="cuda",  # Force CUDA for Triton optimization
-            merge_threshold=1  # Merge words shorter than 1 seconds
+            device=args.device,
+            merge_threshold=args.merge_threshold
         )
         
-        # Example audio file
-        audio_file = "prompt.wav"
-        
-        # Check if example file exists
-        if not os.path.exists(audio_file):
-            print(f"❌ Example audio file not found: {audio_file}")
-            print("Please ensure prompt.wav exists in the current directory")
-            return
-        
         # Extract features
-        print(f"\n🔄 Processing audio file: {audio_file}")
+        print(f"\n🔄 Processing audio file: {args.audio}")
         features = extractor.extract_features(
-            audio_path=audio_file,
-            text=None,  # Let Whisper transcribe
-            enable_word_merging=True
+            audio_path=args.audio,
+            text=args.text,
+            enable_word_merging=not args.no_word_merging
         )
         
         # Display results
@@ -1161,6 +1387,7 @@ def main():
         
         if "error" in features:
             print(f"❌ Error: {features['error']}")
+            return 1
         else:
             print(f"✅ Success!")
             print(f"   Audio file: {features.get('audio_path', 'N/A')}")
@@ -1169,46 +1396,38 @@ def main():
             print(f"   Word count: {features.get('final_word_count', 0)}")
             print(f"   Triton optimization: {features.get('triton_optimization', False)}")
             
-            # Display word-level features
+            # Display word-level features summary
             word_features = features.get('word_features', [])
             if word_features:
-                print(f"\n📝 Word-level Features (first 3 words):")
-                for i, word_feat in enumerate(word_features[:3]):
-                    print(f"   Word {i+1}: '{word_feat.get('word', 'N/A')}'")
-                    print(f"     Duration: {word_feat.get('duration', 0):.3f}s")
-                    print(f"     Pitch mean: {word_feat.get('pitch_mean', 0):.1f}Hz")
-                    print(f"     RMS energy: {word_feat.get('rms_energy', 0):.4f}")
+                print(f"\n📝 Word-level Features Summary:")
+                print(f"   Total words: {len(word_features)}")
+                if len(word_features) > 0:
+                    print(f"   First word: '{word_features[0].get('word', 'N/A')}'")
+                    print(f"   Last word: '{word_features[-1].get('word', 'N/A')}'")
+                
+                # Show first 3 words details if available
+                if len(word_features) >= 3:
+                    print(f"\n📝 First 3 words details:")
+                    for i, word_feat in enumerate(word_features[:3]):
+                        print(f"   Word {i+1}: '{word_feat.get('word', 'N/A')}'")
+                        print(f"     Duration: {word_feat.get('duration', 0):.3f}s")
+                        print(f"     Pitch mean: {word_feat.get('pitch_mean', 0):.1f}Hz")
+                        print(f"     RMS energy: {word_feat.get('rms_energy', 0):.4f}")
         
-        # Save results to JSON file
-        output_file = "extracted_features.json"
-        with open(output_file, 'w', encoding='utf-8') as f:
+        # Save results to specified output file
+        print(f"\n💾 Saving results to: {args.output}")
+        with open(args.output, 'w', encoding='utf-8') as f:
             json.dump(features, f, indent=2, ensure_ascii=False)
-        print(f"\n💾 Results saved to: {output_file}")
+        print(f"✅ Results saved successfully!")
         
-        # Demonstrate extract_json_from_response function
-        print("\n🔍 Testing extract_json_from_response function:")
-        
-        # Create a sample response text with JSON
-        sample_response = f'''
-        Here are the extracted features:
-        {json.dumps(features, indent=2)}
-        
-        The extraction was successful.
-        '''
-        
-        extracted_json = extract_json_from_response(sample_response)
-        if "error" not in extracted_json:
-            print("✅ JSON extraction successful")
-            print(f"   Extracted {len(extracted_json)} top-level keys")
-        else:
-            print(f"❌ JSON extraction failed: {extracted_json['error']}")
-        
-        print("\n🎉 Demo completed successfully!")
+        print("\n🎉 Processing completed successfully!")
+        return 0
         
     except Exception as e:
-        print(f"❌ Demo failed: {e}")
+        print(f"❌ Processing failed: {e}")
         import traceback
         traceback.print_exc()
+        return 1
 
 
 if __name__ == "__main__":
