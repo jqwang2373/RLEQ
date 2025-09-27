@@ -135,7 +135,7 @@ def load_example(example_idx: int) -> Tuple[str, str]:
 
 # ===== Mode 1: Text + Features to Audio (unified_tts mode 2) =====
 
-def mode1_text_features_to_audio(text: str, features: str, speed: float) -> Tuple[Optional[str], str]:
+def mode1_text_features_to_audio(text: str, features: str) -> Tuple[Optional[str], str]:
     """
     Mode 1: Convert text and features to audio using unified_tts mode 2.
     
@@ -146,7 +146,6 @@ def mode1_text_features_to_audio(text: str, features: str, speed: float) -> Tupl
     Args:
         text: Input text to synthesize
         features: JSON string containing word-level prosodic features
-        speed: Speech speed multiplier (1.0 = normal speed)
         
     Returns:
         Tuple of (audio_file_path, status_message)
@@ -177,8 +176,7 @@ def mode1_text_features_to_audio(text: str, features: str, speed: float) -> Tupl
         success = tts.text_features_to_speech(
             text=text,
             word_features=features,
-            output_path=output_path,
-            speed=speed
+            output_path=output_path
         )
         
         if success and os.path.exists(output_path):
@@ -193,7 +191,7 @@ def mode1_text_features_to_audio(text: str, features: str, speed: float) -> Tupl
 
 # ===== Mode 2: Text to Features + Audio (unified_tts mode 1) =====
 
-def mode2_text_to_features_audio(text: str, speed: float) -> Tuple[Optional[str], str, str]:
+def mode2_text_to_features_audio(text: str) -> Tuple[Optional[str], str, str]:
     """
     Mode 2: Convert text to features and audio using unified_tts mode 1.
     
@@ -203,7 +201,6 @@ def mode2_text_to_features_audio(text: str, speed: float) -> Tuple[Optional[str]
     
     Args:
         text: Input text to synthesize
-        speed: Speech speed multiplier (1.0 = normal speed)
         
     Returns:
         Tuple of (audio_file_path, generated_features_json, status_message)
@@ -232,8 +229,7 @@ def mode2_text_to_features_audio(text: str, speed: float) -> Tuple[Optional[str]
         # Generate audio and extract features using the new method
         success, generated_features = tts.text_to_speech_with_features(
             text=text,
-            output_path=output_path,
-            speed=speed
+            output_path=output_path
         )
         
         if success and os.path.exists(output_path):
@@ -465,13 +461,6 @@ def create_gradio_interface():
                         placeholder="Enter word-level features in JSON format...",
                         lines=8
                     )
-                    mode1_speed = gr.Slider(
-                        minimum=0.5,
-                        maximum=2.0,
-                        value=1.0,
-                        step=0.1,
-                        label="Speech Speed"
-                    )
                     
                 with gr.Column(scale=1):
                     mode1_audio_output = gr.Audio(label="Generated Audio")
@@ -497,7 +486,7 @@ def create_gradio_interface():
             # Connect generate button
             mode1_generate_btn.click(
                 fn=mode1_text_features_to_audio,
-                inputs=[mode1_text, mode1_features, mode1_speed],
+                inputs=[mode1_text, mode1_features],
                 outputs=[mode1_audio_output, mode1_status]
             )
         
@@ -516,13 +505,6 @@ def create_gradio_interface():
                         placeholder="Enter the text you want to convert to speech...",
                         lines=4
                     )
-                    mode2_speed = gr.Slider(
-                        minimum=0.5,
-                        maximum=2.0,
-                        value=1.0,
-                        step=0.1,
-                        label="Speech Speed"
-                    )
                     mode2_generate_btn = gr.Button("🎵 Generate Audio & Features", variant="primary")
                     
                 with gr.Column(scale=1):
@@ -537,7 +519,7 @@ def create_gradio_interface():
             # Connect generate button
             mode2_generate_btn.click(
                 fn=mode2_text_to_features_audio,
-                inputs=[mode2_text, mode2_speed],
+                inputs=[mode2_text],
                 outputs=[mode2_audio_output, mode2_features_output, mode2_status]
             )
         
