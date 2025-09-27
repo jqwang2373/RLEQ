@@ -459,14 +459,8 @@ def main():
             try:
                 features = json.loads(result['prosodic_features'])
                 print(f"📊 Generated {len(features)} prosodic segments:")
+                print(features)
                 
-                for i, segment in enumerate(features[:3]):  # Show first 3 segments
-                    print(f"  Segment {i+1}: {segment['word'][:30]}...")
-                    print(f"    Pitch: {segment.get('pitch_mean', 'N/A')}, Energy: {segment.get('energy_rms', 'N/A')}")
-                
-                if len(features) > 3:
-                    print(f"  ... and {len(features) - 3} more segments")
-                    
             except json.JSONDecodeError:
                 print("⚠️  Warning: Could not parse prosodic features as JSON")
                 print(f"Raw features: {result['prosodic_features'][:200]}...")
