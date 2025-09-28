@@ -98,7 +98,7 @@ class UnifiedTTS:
     """
     
     def __init__(self, 
-                 model_path: str = 'Yue-Wang/BatonVoice-1.7B',
+                 model_path: str = 'Yue-Wang/BatonTTS-1.7B',
                  cosyvoice_model_dir: str = './pretrained_models/CosyVoice2-0.5B',
                  prompt_audio_path: str = './prompt.wav',
                  tensor_parallel_size: int = 1,
@@ -108,7 +108,7 @@ class UnifiedTTS:
         Initialize the Unified TTS Processor
         
         Args:
-            model_path: Path to the main TTS model (BATONTTS-1.7B)
+            model_path: Path to the main TTS model (Yue-Wang/BatonTTS-1.7B)
             cosyvoice_model_dir: Directory path to CosyVoice2 model
             prompt_audio_path: Path to prompt audio file for voice cloning
             tensor_parallel_size: Number of GPUs for tensor parallelism
@@ -1196,7 +1196,7 @@ def main():
     parser = argparse.ArgumentParser(description='Unified TTS Script - Two modes for text-to-speech synthesis')
     
     # Model configuration arguments
-    parser.add_argument('--model_path', type=str, default='Yue-Wang/BATONTTS-1.7B',
+    parser.add_argument('--model_path', type=str, default='Yue-Wang/BatonTTS-1.7B',
                        help='Path to the main TTS model')
     parser.add_argument('--cosyvoice_model_dir', type=str, default='./pretrained_models/CosyVoice2-0.5B',
                        help='Directory path to CosyVoice2 model')
