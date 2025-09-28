@@ -5,7 +5,9 @@
 
 This is the official implementation of the paper: **BatonVoice: An Operationalist Framework for Enhancing Controllable Speech Synthesis with Linguistic Intelligence from LLMs**.
 
-📄 **Illustration of BatonVoice**: [View infer.pdf](./asserts/infer.pdf)
+## 📄 Illustration of BatonVoice
+
+![BatonVoice Illustration](./asserts/infer.png)
 
 ## 🎵 Abstract
 
@@ -15,7 +17,9 @@ We introduce **BatonVoice**, a framework where a Large Language Model (LLM) acts
 
 A separate, specialized TTS model, the **"orchestra"**, then executes this plan, generating the final speech directly from these precise features. To realize this component, we developed **BatonTTS**, a 1.7B parameter TTS model trained specifically for this task.
 
-📄 **Overview of BatonTTS**: [View framework.pdf](./asserts/framework.pdf)
+## 📄 Overview of BatonTTS
+
+![BatonTTS Framework](./asserts/framework.png)
 
 ## 🏛️ Framework Overview
 
