@@ -4,7 +4,6 @@ set -u
 
 WANDB_TOKEN=YOUR_WANDB_TOKEN
 RUN_NAME=YOUR_RUN_NAME
-DATA_DIR=YOUR_DATA_DIR
 IF_THINK=False
 export RAY_record_ref_creation_sites=1
 export HYDRA_FULL_ERROR=1
