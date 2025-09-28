@@ -14,7 +14,7 @@ We propose a new paradigm inspired by "operationalism" that decouples instructio
 
 We introduce **BatonVoice**, a framework where a Large Language Model (LLM) acts as a **"conductor"**. The conductor's role is to understand nuanced user instructions and generate a detailed, textual **"plan"**. This plan consists of explicit, word-level vocal features (e.g., pitch, energy, speaking rate).
 
-A separate, specialized TTS model, the **"orchestra"**, then executes this plan, generating the final speech directly from these precise features. To realize this component, we developed **BatonTTS**, a 1.7B parameter TTS model trained specifically for this task.
+A separate, specialized TTS model, the **"orchestra"**, then executes this plan, generating the final speech directly from these precise features. To realize this component, we developed **BatonTTS**, a 1.7B parameter TTS model trained specifically for this task, which uses Qwen3-1.7B as the backbone and speech tokenizer of CosyVoice2.
 
 
 ![BatonTTS Framework](./asserts/framework.png)
@@ -261,11 +261,11 @@ print(features)
 ```
 
 ## Acknowledgments
-
-- **CosyVoice2**: Advanced TTS model from FunAudioLLM
-- **Matcha-TTS**: High-quality TTS architecture
-- **Whisper**: Speech recognition capabilities
-- **Wav2Vec2**: Word-level alignment features
+- [Qwen3](https://github.com/QwenLM/Qwen3): Powerful LLM Backbone
+- [CosyVoice2](https://github.com/FunAudioLLM/CosyVoice): Advanced TTS model from FunAudioLLM
+- [Matcha-TTS](https://github.com/shivammehta25/Matcha-TTS): High-quality TTS architecture
+- [Whisper](https://github.com/openai/whisper): Speech recognition capabilities
+- [Wav2Vec2](https://github.com/facebookresearch/fairseq/tree/main/examples/wav2vec): Word-level alignment features
 
 ---
 
