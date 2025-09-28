@@ -98,7 +98,7 @@ class UnifiedTTS:
     """
     
     def __init__(self, 
-                 model_path: str = 'Yue-Wang/BATONTTS-1.7B',
+                 model_path: str = 'Yue-Wang/BatonVoice-1.7B',
                  cosyvoice_model_dir: str = './pretrained_models/CosyVoice2-0.5B',
                  prompt_audio_path: str = './prompt.wav',
                  tensor_parallel_size: int = 1,
@@ -195,7 +195,7 @@ class UnifiedTTS:
             gpu_memory_utilization=self.gpu_memory_utilization,
             trust_remote_code=True,
             dtype="bfloat16",
-            max_model_len=4096,
+            max_model_len=2500,
         )
         
         # Load tokenizer separately
@@ -343,7 +343,7 @@ class UnifiedTTS:
         to ensure consistent behavior across different inference implementations.
         
         Parameter Details:
-        - temperature (0.6): Controls randomness in token selection
+        - temperature (0.8): Controls randomness in token selection
           * Lower values (0.1-0.5): More deterministic, consistent output
           * Higher values (0.8-1.0): More creative, diverse output
           * 0.6 provides optimal balance for natural speech variation
@@ -374,8 +374,8 @@ class UnifiedTTS:
         """
 
         self.sampling_params = SamplingParams(
-            temperature=0.7,      # Balanced randomness for natural speech variation
-            top_p=0.95,           # Full nucleus sampling for maximum expressiveness
+            temperature=0.6,      # Balanced randomness for natural speech variation
+            top_p=1,           # Full nucleus sampling for maximum expressiveness
             max_tokens=2048,     # Maximum sequence length (matches mode1.py)
             stop_token_ids=[self.eos_token_id],  # Stop at end of speech tokens
             repetition_penalty=1.1,  # Slight penalty to reduce repetitive patterns

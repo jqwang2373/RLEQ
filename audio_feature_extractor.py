@@ -54,8 +54,8 @@ SAMPLE_RATE = 16000  # Standard sample rate for Whisper and Wav2Vec2
 MAX_DURATION = 30    # Maximum audio segment duration (seconds)
 
 # Default model paths for English
-DEFAULT_WHISPER_MODEL = "/apdcephfs_sh3/share_300730042/hunyuan/wangyue/model/whisper-large-v3"
-DEFAULT_ALIGN_MODEL = "/apdcephfs_sh3/share_300730042/hunyuan/wangyue/model/wav2vec2-large-960h-lv60-self"
+DEFAULT_WHISPER_MODEL = "openai/whisper-large-v3"
+DEFAULT_ALIGN_MODEL = "facebook/wav2vec2-large-960h-lv60-self"
 
 # ===== Data Structure Definitions =====
 @dataclass
