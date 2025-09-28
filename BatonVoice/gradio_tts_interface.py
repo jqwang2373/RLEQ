@@ -21,7 +21,10 @@ import os
 import tempfile
 import traceback
 from typing import Optional, Tuple, List, Dict, Any
-
+import sys
+# Add CosyVoice paths
+sys.path.append('third-party/CosyVoice')
+sys.path.append('third-party/Matcha-TTS')
 # Import the three main modules
 try:
     from unified_tts import UnifiedTTS
@@ -50,26 +53,13 @@ extractor_instance = None
 # as predefined examples in Mode 1 interface
 TEST_EXAMPLES = [
     {
-        "text": "Kids are talking by the door",
-        "features": '[{"word": "Kids are talking","pitch_mean": 315,"pitch_slope": 90,"energy_rms": 0.005,"energy_slope": 25,"spectral_centroid": 2650},{"word": "by the door","pitch_mean": 360,"pitch_slope": -110,"energy_rms": 0.004,"energy_slope": -30,"spectral_centroid": 2900}]'
+        "text": "Wow, you really did a great job.",
+        "features": '[{"word": "Wow, you really","pitch_mean": 360,"pitch_slope": 95,"energy_rms": 0.016,"energy_slope": 60,"spectral_centroid": 2650},{"word": "did a great job.","pitch_mean": 330,"pitch_slope": -80,"energy_rms": 0.014,"energy_slope": -50,"spectral_centroid": 2400}]'
     },
     {
-        "text": "Hello world, how are you today?",
-        "features": '[{"word": "Hello world","pitch_mean": 280,"pitch_slope": 50,"energy_rms": 0.006,"energy_slope": 15,"spectral_centroid": 2400},{"word": "how are you","pitch_mean": 320,"pitch_slope": -20,"energy_rms": 0.007,"energy_slope": 10,"spectral_centroid": 2600},{"word": "today?","pitch_mean": 350,"pitch_slope": -80,"energy_rms": 0.005,"energy_slope": -25,"spectral_centroid": 2800}]'
-    },
-    {
-        "text": "The weather is beautiful outside",
-        "features": '[{"word": "The weather is","pitch_mean": 250,"pitch_slope": 30,"energy_rms": 0.004,"energy_slope": 20,"spectral_centroid": 2200},{"word": "beautiful outside","pitch_mean": 300,"pitch_slope": -60,"energy_rms": 0.006,"energy_slope": -15,"spectral_centroid": 2500}]'
-    },
-    {
-        "text": "I'm excited about this project!",
-        "features": '[{"word": "I\'m excited","pitch_mean": 380,"pitch_slope": 120,"energy_rms": 0.008,"energy_slope": 40,"spectral_centroid": 3000},{"word": "about this","pitch_mean": 350,"pitch_slope": 80,"energy_rms": 0.007,"energy_slope": 30,"spectral_centroid": 2800},{"word": "project!","pitch_mean": 400,"pitch_slope": -100,"energy_rms": 0.009,"energy_slope": -20,"spectral_centroid": 3200}]'
-    },
-    {
-        "text": "Please be quiet in the library",
-        "features": '[{"word": "Please be quiet","pitch_mean": 200,"pitch_slope": -10,"energy_rms": 0.003,"energy_slope": 5,"spectral_centroid": 1800},{"word": "in the library","pitch_mean": 180,"pitch_slope": -30,"energy_rms": 0.002,"energy_slope": -10,"spectral_centroid": 1600}]'
-    }
-]
+        "text": "Wow, you really did a great job.",
+        "features": '[{"word": "wow", "pitch_mean": 271, "pitch_slope": 6, "energy_rms": 0.009, "energy_slope": -4, "spectral_centroid": 2144}, {"word": "you realy", "pitch_mean": 270, "pitch_slope": 195, "energy_rms": 0.01, "energy_slope": 8, "spectral_centroid": 1403}, {"word": "did a great", "pitch_mean": 287, "pitch_slope": 152, "energy_rms": 0.009, "energy_slope": -15, "spectral_centroid": 1920}, {"word": "job", "pitch_mean": 166, "pitch_slope": -20, "energy_rms": 0.004, "energy_slope": -66, "spectral_centroid": 1881}]'
+    }]
 
 # ===== Utility Functions =====
 
@@ -638,10 +628,8 @@ def main():
     # Launch interface
     print("🌐 Launching Gradio interface...")
     interface.launch(
-        server_name="0.0.0.0",  # Allow external access
         server_port=7860,       # Default Gradio port
-        share=False,            # Set to True for public sharing
-        debug=True              # Enable debug mode
+        share=True,            # Set to True for public sharing
     )
 
 if __name__ == "__main__":
