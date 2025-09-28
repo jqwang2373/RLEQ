@@ -1,0 +1,6 @@
+[submodule "BatonVoice/third-party/Matcha-TTS"]
+	path = BatonVoice/third-party/Matcha-TTS
+	url = https://github.com/shivammehta25/Matcha-TTS.git
+[submodule "BatonVoice/third-party/CosyVoice"]
+	path = BatonVoice/third-party/CosyVoice
+	url = https://github.com/FunAudioLLM/CosyVoice.git

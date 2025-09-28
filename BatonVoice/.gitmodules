@@ -1,6 +1,0 @@
-[submodule "third-party/Matcha-TTS"]
-	path = third-party/Matcha-TTS
-	url = https://github.com/shivammehta25/Matcha-TTS.git
-[submodule "third-party/CosyVoice"]
-	path = third-party/CosyVoice
-	url = https://github.com/FunAudioLLM/CosyVoice.git
