@@ -1,6 +1,6 @@
 # <img src="./asserts/logo.png" alt="BatonVoice Logo" height="40" style="vertical-align: middle;"> BatonVoice: An Operationalist Framework for Controllable Speech Synthesis
 
-[![arXiv](https://img.shields.io/badge/arXiv-Paper-b31b1b.svg)](https://arxiv.org/abs/YOUR_PAPER_ID) <!-- TODO: Replace with your actual arXiv ID -->
+[![arXiv](https://img.shields.io/badge/arXiv-Paper-b31b1b.svg)](https://arxiv.org/pdf/2509.26514) <!-- TODO: Replace with your actual arXiv ID -->
 [![Code](https://img.shields.io/badge/GitHub-Code-black.svg)](https://github.com/Tencent/digitalhuman/tree/main/BatonVoice)
 [![Model](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-yellow)](https://huggingface.co/Yue-Wang/BatonTTS-1.7B)
 
