@@ -32,10 +32,20 @@ target_prompt = {
     }
 
 
-def call_api(prompt,mode="dsv3"):
+#def call_api(prompt,mode="dsv3"):
 '''
 Implement your own call_api function here.
 '''
+#    return reply
+def call_api(prompt, mode="dsv3"):
+    """
+    Implement your own call_api function here.
+    Very simple stub: return the prompt with a mode tag.
+    Replace this with real HTTP/RPC calls when ready.
+    """
+    # 将任意类型的 prompt 转成字符串，避免报错
+    text = prompt if isinstance(prompt, str) else str(prompt)
+    reply = f"[stub:{mode}] {text}"
     return reply
 
 

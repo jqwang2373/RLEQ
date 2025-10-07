@@ -168,7 +168,7 @@ class RLHFDataset(Dataset):
         history_formatted = json.dumps(history_formatted, ensure_ascii=False, indent=2)
             
         # chat=[{"role":"user","content":f"{system_prompt_trained}\n\n# 对话上下文：\n\n用户:{user_reply["content"]}\n\n\n# 你的思考和回复：\n"}]
-        chat=[{"role":"system","content":system_prompt_trained},{"role":"user","content":user_reply["content"]}]
+        chat=[{"role":"system","content":system_prompt_train_think},{"role":"user","content":user_reply["content"]}]
         print("chat",chat)
 
         prompt_with_chat_template = self.tokenizer.apply_chat_template(chat, add_generation_prompt=True, tokenize=False)
@@ -204,7 +204,7 @@ class RLHFDataset(Dataset):
         # encode prompts without chat template
         if self.return_raw_chat:
             # row_dict['raw_prompt'] = chat.tolist()
-            row_dict['raw_prompt'] = recursive_convert([{"role":"system","content":system_prompt_trained}]+[user_reply])#makes all internal np arrays into lists
+            row_dict['raw_prompt'] = recursive_convert([{"role":"system","content":system_prompt_train_unthink}]+[user_reply])#makes all internal np arrays into lists
             row_dict['simulator']=player_simulator
             # print("raw_prompt",row_dict['raw_prompt'])
         # add index for each prompt
@@ -296,7 +296,7 @@ class VirtualRLHFDataset(RLHFDataset):
         history_formatted = [{"role": "朋友", "content": user_reply["content"]}]
         history_formatted = json.dumps(history_formatted, ensure_ascii=False, indent=2)
             
-        chat = [{"role":"system","content":system_prompt_trained},{"role":"user","content":user_reply["content"]}]
+        chat = [{"role":"system","content":system_prompt_train_think},{"role":"user","content":user_reply["content"]}]
         print("chat", chat)
 
         prompt_with_chat_template = self.tokenizer.apply_chat_template(chat, add_generation_prompt=True, tokenize=False)
@@ -325,7 +325,7 @@ class VirtualRLHFDataset(RLHFDataset):
 
         # encode prompts without chat template
         if self.return_raw_chat:
-            row_dict['raw_prompt'] = recursive_convert([{"role":"system","content":system_prompt_trained}]+[user_reply])
+            row_dict['raw_prompt'] = recursive_convert([{"role":"system","content":system_prompt_train_think}]+[user_reply])
             row_dict['simulator'] = player_simulator
 
         return row_dict

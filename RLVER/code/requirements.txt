@@ -31,7 +31,6 @@ email_validator==2.2.0
 fastapi==0.115.8
 fastapi-cli==0.0.7
 filelock==3.17.0
-flash_attn==2.7.4.post1
 frozenlist==1.5.0
 fsspec==2024.6.1
 gguf==0.10.0
@@ -122,7 +121,7 @@ python-multipart==0.0.20
 pytz==2025.1
 PyYAML==6.0.2
 pyzmq==26.2.1
-ray==2.42.1
+ray==2.40.0
 referencing==0.36.2
 regex==2024.11.6
 requests==2.32.3
@@ -145,10 +144,7 @@ sympy==1.13.1
 tensordict==0.5.0
 tiktoken==0.9.0
 tokenizers==0.21.0
-torch==2.5.1+cu124
-torchaudio==2.5.1+cu124
 torchdata==0.11.0
-torchvision==0.20.1+cu124
 tqdm==4.67.1
 transformers==4.48.3
 triton==3.1.0
@@ -160,14 +156,15 @@ uvicorn==0.34.0
 uvloop==0.21.0
 -e git+https://github.com/zwhe99/verl.git@c13b1ac24a6fdcbcaf33c77b514704bed510dfe2#egg=verl
 virtualenv==20.29.2
-vllm==0.7.3.dev180+g46cdd595
+vllm==0.7.3
 wandb==0.19.6
 watchfiles==1.0.4
 websockets==15.0
 wheel==0.45.1
 wrapt==1.17.2
 xformers==0.0.28.post3
-xgrammar @ file:///root/xgrammar/python
+xgrammar==0.1.11
 xxhash==3.5.0
 yarl==1.18.3
 zipp==3.21.0
+flash_attn==2.7.4.post1
