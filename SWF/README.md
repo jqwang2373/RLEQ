@@ -1,14 +1,18 @@
 # Social Welfare Function Leaderboard: When LLM Agents Allocate Social Welfare
 
-We propose the **Social Welfare Function (SWF) Benchmark & Leaderboard** — a simulation where an LLM acts as a sovereign allocator, distributing tasks to heterogeneous recipients.  
-We score **Fairness** *(1−Gini)*, **Efficiency** *(ROI)*, and their product **SWF = (1−Gini) × ROI*, revealing that general chat ability (Arena rank) is **misaligned** with welfare-allocation skill and that models are **steerable** via simple social-influence prompts.
+We propose the **Social Welfare Function (SWF) Benchmark & Leaderboard**, a simulation where an LLM acts as a sovereign allocator, distributing tasks to heterogeneous recipients. We evaluate Fairness, Efficiency, and their product **SWF** score in this welfare allocation task, revealing that (i) general chat ability (Arena rank) is **misaligned** with welfare, (ii) LLMs tend to be utilitarian, and (iii) LLM's allocation perference are **steerable** via simple social-influence prompts.
+
+
 
 ![framework](./asset/framework.png)  
 <p align="center"><sub>An illustration of our SWF framework: an allocator LLM assigns tasks over long horizons, receives fairness/efficiency feedback, and is evaluated by the unified SWF score.</sub></p>
 
 ## Main Result
 
+
+
 ### Social Welfare Function Leaderboard
+
 - **Balanced governance matters**: top SWF models jointly optimize fairness and efficiency rather than a single objective.  
 - **Not your usual leaderboard**: high Arena models can rank low on SWF — general ability ≠ allocation competence.  
 - **Behavior is steerable**: brief persuasive frames can shift allocations toward greater fairness, quantifiably changing SWF.  
@@ -66,4 +70,5 @@ We score **Fairness** *(1−Gini)*, **Efficiency** *(ROI)*, and their product **
     <tr><td>Hybrid-oriented</td><td>–</td><td>17.01</td><td>0.534</td><td>34.25</td><td>–</td><td>–</td></tr>
   </tbody>
 </table>
+
 
