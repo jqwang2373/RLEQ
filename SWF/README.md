@@ -12,8 +12,8 @@ We reveal three main points:
 
 
 
-![framework](./asset/framework.png)  
-<p align="center"><sub>An illustration of our SWF framework: an allocator LLM assigns tasks over long horizons, receives fairness/efficiency feedback, and is evaluated by the unified SWF score.</sub></p>
+![framework](./asset/workflow.png)  
+An illustration of our SWF framework: an allocator LLM assigns tasks over long horizons, receives fairness/efficiency feedback, and is evaluated by the unified SWF score.
 
 ## Main Result
 
@@ -78,6 +78,7 @@ We reveal three main points:
     <tr><td>Hybrid-oriented</td><td>–</td><td>17.01</td><td>0.534</td><td>34.25</td><td>–</td><td>–</td></tr>
   </tbody>
 </table>
+
 
 
 
