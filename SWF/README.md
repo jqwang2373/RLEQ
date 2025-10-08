@@ -1,6 +1,11 @@
 # Social Welfare Function Leaderboard: When LLM Agents Allocate Social Welfare
 
-We propose the **Social Welfare Function (SWF) Benchmark & Leaderboard**, a simulation where an LLM acts as a sovereign allocator, distributing tasks to heterogeneous recipients. We evaluate Fairness, Efficiency, and their product **SWF** score in this welfare allocation task, revealing that (i) general chat ability (Arena rank) is **misaligned** with welfare, (ii) LLMs tend to be utilitarian, and (iii) LLM's allocation perference are **steerable** via simple social-influence prompts.
+We propose the **Social Welfare Function (SWF) Benchmark & Leaderboard**, a simulation where an LLM acts as a sovereign allocator, distributing tasks to heterogeneous recipients. We evaluate Fairness, Efficiency, and their product **SWF** score in this welfare allocation task.
+
+We reveal three main points:
+(i) general chat ability (Arena rank) is **misaligned** with welfare allocation capability;
+(ii) LLMs tend to be utilitarian, e.g., typically perfering collective efficiency while reducing individual fairness; and
+(iii) LLM's allocation perference are **steerable** via simple social-influence prompts.
 
 
 
@@ -70,5 +75,6 @@ We propose the **Social Welfare Function (SWF) Benchmark & Leaderboard**, a simu
     <tr><td>Hybrid-oriented</td><td>–</td><td>17.01</td><td>0.534</td><td>34.25</td><td>–</td><td>–</td></tr>
   </tbody>
 </table>
+
 
 
