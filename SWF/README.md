@@ -1,4 +1,4 @@
-# Social Welfare Function Leaderboard: When LLM Agents Allocate Social Welfare
+# Social Welfare Function Leaderboard
 
 We propose the **Social Welfare Function (SWF) Benchmark & Leaderboard**, a simulation where an LLM acts as a sovereign allocator, distributing tasks to heterogeneous recipients. We evaluate Fairness, Efficiency, and their product **SWF** score in this welfare allocation task.
 
@@ -78,6 +78,7 @@ We reveal three main points:
     <tr><td>Hybrid-oriented</td><td>–</td><td>17.01</td><td>0.534</td><td>34.25</td><td>–</td><td>–</td></tr>
   </tbody>
 </table>
+
 
 
 
